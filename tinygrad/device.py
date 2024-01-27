@@ -326,6 +326,7 @@ class Compiled:
       from tinygrad.graph import print_tree
       print_tree(ast)
     from tinygrad.codegen.linearizer import Linearizer
+    #from tinygrad.codegen.linearizer2 import Linearizer
     k = Linearizer(ast, self.compiler.linearizer_opts)
     k.required_optimizations()
     if not NOOPT:
