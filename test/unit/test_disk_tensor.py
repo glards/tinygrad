@@ -169,8 +169,8 @@ def helper_test_disk_tensor(fn, data, np_fxn, tinygrad_fxn=None):
   pathlib.Path(temp(fn)).unlink(missing_ok=True)
   tinygrad_tensor = Tensor(data, device="CLANG").to(f"disk:{temp(fn)}")
   numpy_arr = np.array(data)
-  tinygrad_fxn(tinygrad_tensor)
-  np_fxn(numpy_arr)
+  tinygrad_tensor = tinygrad_tensor if (t := tinygrad_fxn(tinygrad_tensor)) is None else t
+  numpy_arr = numpy_arr if (n := np_fxn(numpy_arr)) is None else n
   np.testing.assert_allclose(tinygrad_tensor.numpy(), numpy_arr)
 
 class TestDiskTensor(unittest.TestCase):
@@ -204,6 +204,10 @@ class TestDiskTensor(unittest.TestCase):
   def test_reshape(self):
     helper_test_disk_tensor("dt5", [1,2,3,4,5], lambda x: x.reshape((1,5)))
     helper_test_disk_tensor("dt6", [1,2,3,4], lambda x: x.reshape((2,2)))
+
+  def test_bitcast(self):
+    helper_test_disk_tensor("dt7", np.uint32([1,2,3,4]), lambda x: x.view(np.uint16), lambda x: x.cast(dtypes.uint16))
+    #helper_test_disk_tensor("dt8", np.uint16([1,2,3,4]), lambda x: x.view(np.uint32), lambda x: x.cast(dtypes.uint32))
 
 if __name__ == "__main__":
   unittest.main()
