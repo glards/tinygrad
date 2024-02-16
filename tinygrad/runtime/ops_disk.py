@@ -63,13 +63,14 @@ class DiskRunner(JITRunner):
     view = top_src.arg.st.views[0]
     assert view.mask is None, "view cannot have a mask"
     assert strides_for_shape(view.shape) == view.strides, "disk tensors don't support strides"
-    self.new_size = prod(view.shape)
+    self.new_size = prod(view.shape)*top_src.arg.dtype.itemsize//self.new_dtype.itemsize
     self.new_offset = view.offset
   def __call__(self, rawbufs:List[Buffer], var_vals:Dict[Any, int], wait=False, jit=False):
     assert len(rawbufs) == 2
     src = rawbufs[1]._buf
     # TODO: src.dtype.itemsize or self.new_dtype.itemsize?
     rawbufs[0]._buf = DiskBuffer(src.ud, self.new_size, self.new_dtype, offset=src.offset+self.new_offset*src.dtype.itemsize)
+    rawbufs[0].size = self.new_size
 
 class DiskDevice(Compiled):
   def __init__(self, device:str): super().__init__(device, DiskAllocator(device[len("disk:"):]), None, None)
