@@ -206,8 +206,8 @@ class TestDiskTensor(unittest.TestCase):
     helper_test_disk_tensor("dt6", [1,2,3,4], lambda x: x.reshape((2,2)))
 
   def test_bitcast(self):
-    helper_test_disk_tensor("dt7", np.uint32([1,2,3,4]), lambda x: x.view(np.uint16), lambda x: x.cast(dtypes.uint16))
-    #helper_test_disk_tensor("dt8", np.uint16([1,2,3,4]), lambda x: x.view(np.uint32), lambda x: x.cast(dtypes.uint32))
+    helper_test_disk_tensor("dt7", np.uint32([1,2,3,4]), lambda x: x.view(np.uint16), lambda x: x.bitcast(dtypes.uint16))
+    helper_test_disk_tensor("dt8", np.uint16([1,2,3,4]), lambda x: x.view(np.uint32), lambda x: x.bitcast(dtypes.uint32))
 
 if __name__ == "__main__":
   unittest.main()

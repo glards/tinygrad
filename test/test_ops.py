@@ -1615,6 +1615,9 @@ class TestOps(unittest.TestCase):
     data = [[[1, 2, 3], [0, 3, 5]], [[1, 2, 3], [0, 3, 5]]]
     helper_test_op([], lambda: torch.nn.functional.one_hot(torch.tensor(data), 8), lambda: Tensor(data).one_hot(8), forward_only=True)
 
+  def test_bitcast(self):
+    helper_test_op([(16,)], lambda x: x.view(torch.uint8), lambda x: x.bitcast(dtypes.uint8))
+
 if __name__ == '__main__':
   np.random.seed(1337)
   unittest.main(verbosity=2)
